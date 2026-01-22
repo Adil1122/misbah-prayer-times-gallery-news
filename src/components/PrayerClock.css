@@ -1,0 +1,171 @@
+.prayer-clock-container {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    height: 100%;
+    background: var(--color-bg);
+    color: var(--color-text);
+    position: relative;
+}
+
+/* Header */
+/* Header */
+.institute-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* Push clock to right */
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.left-header-content {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.logo-placeholder {
+    width: 64px;
+    height: 64px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.8rem;
+    color: white;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+}
+
+.institute-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.institute-name {
+    font-size: 1.5rem;
+    line-height: 1.2;
+}
+
+.institute-address {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+}
+
+/* Clock override - now inside header */
+.digital-clock {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    /* Align text to right */
+    justify-content: center;
+}
+
+.clock-icon {
+    display: none;
+    /* Hide icon if requested, or keep it. User said "move clock", usually implies text. Keeping simple. */
+}
+
+.time-display {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1;
+    color: white;
+}
+
+.date-display {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+}
+
+/* Table */
+.prayers-table-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.prayers-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 0.5rem;
+}
+
+.prayers-table th {
+    padding: 1rem;
+    color: var(--color-text-muted);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.prayer-row {
+    background: rgba(255, 255, 255, 0.03);
+    transition: all var(--transition-fast);
+}
+
+.prayer-row td {
+    padding: 1.25rem 1rem;
+}
+
+.prayer-row td:first-child {
+    border-top-left-radius: var(--radius-md);
+    border-bottom-left-radius: var(--radius-md);
+}
+
+.prayer-row td:last-child {
+    border-top-right-radius: var(--radius-md);
+    border-bottom-right-radius: var(--radius-md);
+}
+
+.prayer-row.active {
+    background: var(--color-primary);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    transform: scale(1.02);
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.prayer-name-en {
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.prayer-time-cell {
+    font-family: monospace;
+    font-size: 1.2rem;
+    color: var(--color-text-muted);
+}
+
+.prayer-name-ar {
+    font-family: "Traditional Arabic", serif;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.prayer-row.active .prayer-name-en,
+.prayer-row.active .prayer-time-cell,
+.prayer-row.active .prayer-name-ar {
+    color: white;
+}
