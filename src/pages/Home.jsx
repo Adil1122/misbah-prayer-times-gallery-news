@@ -3,6 +3,7 @@ import PrayerClock from '../components/PrayerClock';
 import ImageSlider from '../components/ImageSlider';
 import NewsTicker from '../components/NewsTicker';
 import { fetchDisplayData } from '../services/frontendApi';
+import { Maximize2, Minimize2 } from 'lucide-react';
 import './Home.css';
 
 const Home = () => {
@@ -10,6 +11,7 @@ const Home = () => {
     const [images, setImages] = useState([]);
     const [news, setNews] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isExpanded, setIsExpanded] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -62,7 +64,14 @@ const Home = () => {
     }
 
     return (
-        <div className="home-container">
+        <div className={`home-container ${isExpanded ? 'is-expanded' : ''}`}>
+            <button
+                className="layout-toggle-btn"
+                onClick={() => setIsExpanded(!isExpanded)}
+                title={isExpanded ? "Show Gallery" : "Expand Prayer Timings"}
+            >
+                {isExpanded ? <Minimize2 size={24} /> : <Maximize2 size={24} />}
+            </button>
             <div className="main-content">
                 <div className="left-panel">
                     <PrayerClock prayers={prayers} />

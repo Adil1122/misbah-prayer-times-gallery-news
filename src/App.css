@@ -28,7 +28,7 @@
 
 h1 {
   font-size: 3.5rem;
-  background: linear-gradient(to right, #f8fafc, #94a3b8);
+  background: linear-gradient(to right, var(--color-primary-dark), var(--color-primary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   line-height: 1.1;
@@ -45,7 +45,7 @@ h1 {
   padding: 2rem;
   background: var(--color-surface);
   border-radius: var(--radius-lg);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 

@@ -24,13 +24,15 @@
 .left-panel {
     flex: 1;
     overflow-y: auto;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .right-panel {
     flex: 1;
     height: 50vh;
     position: relative;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Loading Spinner */
@@ -43,12 +45,45 @@
 }
 
 .loader {
-    border: 4px solid rgba(255, 255, 255, 0.1);
+    border: 4px solid rgba(0, 0, 0, 0.1);
     width: 36px;
     height: 36px;
     border-radius: 50%;
     border-left-color: var(--color-primary);
     animation: spin 1s linear infinite;
+}
+
+/* Toggle Button Styling */
+.layout-toggle-btn {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    /* On mobile, usually top right of screen */
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    border-radius: 6px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.layout-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.is-expanded .layout-toggle-btn {
+    background: var(--color-primary);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 @keyframes spin {
@@ -72,11 +107,37 @@
         height: calc(100vh - 60px);
         /* Full height minus footer */
         border-bottom: none;
-        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        border-right: 1px solid rgba(0, 0, 0, 0.1);
     }
 
     .right-panel {
         flex: 1;
         height: calc(100vh - 60px);
+    }
+
+    /* Desktop Toggle Button Position (Top right of left panel) */
+    .layout-toggle-btn {
+        right: auto;
+        left: calc(45% - 74px);
+        /* 44px width + 30px right margin */
+        top: 30px;
+    }
+
+    /* Expansion Logic (Corrected: Expand Left, Hide Right) */
+    .is-expanded .left-panel {
+        flex: 0 0 100%;
+        border-right: none;
+    }
+
+    .is-expanded .right-panel {
+        flex: 0 0 0;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .is-expanded .layout-toggle-btn {
+        left: auto;
+        right: 30px;
+        background: var(--color-primary-dark);
     }
 }

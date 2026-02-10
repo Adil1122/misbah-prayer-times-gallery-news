@@ -24,8 +24,16 @@ const ImageSlider = ({ images, interval = 5000 }) => {
                 <div
                     key={image.id}
                     className={`slide ${index === currentIndex ? 'active' : ''}`}
-                    style={{ backgroundImage: `url(${image.url})` }}
                 >
+                    <img
+                        src={image.url.includes("https://aquilastech.com/misbah-ul-quran/backend") ? image.url.replace("https://aquilastech.com/misbah-ul-quran/backend", "https://aquilastech.com/misbah-ul-quran/backend/public") : image.url}
+                        alt={image.caption || `Slide ${index + 1}`}
+                        className="slide-image"
+                        onError={(e) => {
+                            console.error('Image failed to load:', image.url);
+                            e.target.style.display = 'none';
+                        }}
+                    />
                     <div className="slide-overlay">
                         <h3 className="slide-caption">{image.caption}</h3>
                     </div>
