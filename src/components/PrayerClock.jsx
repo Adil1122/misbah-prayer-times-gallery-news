@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Clock, MapPin } from 'lucide-react';
 import logoImg from '../assets/logo.png';
 import './PrayerClock.css';
 
-const PrayerClock = ({ prayers }) => {
+const PrayerClock = ({ prayers, isExpanded }) => {
     const [currentTime, setCurrentTime] = useState(new Date());
+    const activeRowRef = useRef(null);
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -90,8 +91,18 @@ const PrayerClock = ({ prayers }) => {
 
     const currentPrayerId = getCurrentPrayerId();
 
+    // Auto-scroll to active row when expanded or prayer changes
+    useEffect(() => {
+        if (isExpanded && activeRowRef.current) {
+            activeRowRef.current.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+            });
+        }
+    }, [isExpanded, currentPrayerId]);
+
     return (
-        <div className="prayer-clock-container">
+        <div className={`prayer-clock-container ${isExpanded ? 'expanded-mode' : ''}`}>
             {/* Header Section */}
             <div className="institute-header">
                 {/* Logo Section (Left) */}
@@ -123,17 +134,21 @@ const PrayerClock = ({ prayers }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {prayers.map((prayer) => (
-                            <tr
-                                key={prayer.id}
-                                className={`prayer-row ${currentPrayerId === prayer.id ? 'active' : ''}`}
-                            >
-                                <td className="text-left prayer-name-en">{prayer.name}</td>
-                                <td className="text-center prayer-time-cell">{formatPrayerTime(prayer.begin_time || prayer.time)}</td>
-                                <td className="text-center prayer-time-cell">{formatPrayerTime(prayer.end_time || '--:--')}</td>
-                                <td className="text-right prayer-name-ar">{prayer.arabic_name}</td>
-                            </tr>
-                        ))}
+                        {prayers.map((prayer) => {
+                            const isActive = currentPrayerId === prayer.id;
+                            return (
+                                <tr
+                                    key={prayer.id}
+                                    ref={isActive ? activeRowRef : null}
+                                    className={`prayer-row ${isActive ? 'active' : ''}`}
+                                >
+                                    <td className="text-left prayer-name-en">{prayer.name}</td>
+                                    <td className="text-center prayer-time-cell">{formatPrayerTime(prayer.begin_time || prayer.time)}</td>
+                                    <td className="text-center prayer-time-cell">{formatPrayerTime(prayer.end_time || '--:--')}</td>
+                                    <td className="text-right prayer-name-ar">{prayer.arabic_name}</td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             </div>

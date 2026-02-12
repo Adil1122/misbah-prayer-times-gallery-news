@@ -74,7 +74,7 @@ const Home = () => {
             </button>
             <div className="main-content">
                 <div className="left-panel">
-                    <PrayerClock prayers={prayers} />
+                    <PrayerClock prayers={prayers} isExpanded={isExpanded} />
                 </div>
                 <div className="right-panel">
                     <ImageSlider images={images} />
