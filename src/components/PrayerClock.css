@@ -111,6 +111,12 @@
     display: none;
 }
 
+/* Expanded Mode Overrides for Container */
+.expanded-mode .prayers-table-container {
+    overflow: hidden;
+    /* No scrolling in expanded mode */
+}
+
 .prayers-table {
     width: 100%;
     border-collapse: separate;
@@ -263,6 +269,10 @@
 /* Expanded Prayer Table */
 .expanded-mode .prayers-table {
     border-spacing: 0 0.2rem;
+    height: 100%;
+    /* Force table to take full height */
+    table-layout: fixed;
+    /* Ensure equal row heights if possible or at least respectful of height */
 }
 
 .expanded-mode .prayer-row td {
@@ -283,7 +293,8 @@
 
 /* Massive Fonts for Expanded Mode */
 .expanded-mode .prayer-name-en {
-    font-size: 5.5rem;
+    font-size: 4rem;
+    line-height: 1;
     -webkit-text-stroke: 2px var(--color-primary-dark);
     text-stroke: 2px var(--color-primary-dark);
 }
@@ -291,14 +302,16 @@
 .expanded-mode .prayer-time-cell {
     font-family: inherit;
     /* Match the font of names for consistency in boldness */
-    font-size: 5.5rem;
+    font-size: 4rem;
     font-weight: 900;
+    line-height: 1;
     -webkit-text-stroke: 2px var(--color-primary-dark);
     text-stroke: 2px var(--color-primary-dark);
 }
 
 .expanded-mode .prayer-name-ar {
-    font-size: 5.5rem;
+    font-size: 4rem;
+    line-height: 1;
     -webkit-text-stroke: 2px var(--color-primary-dark);
     text-stroke: 2px var(--color-primary-dark);
 }

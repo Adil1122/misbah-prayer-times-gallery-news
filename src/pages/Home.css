@@ -127,6 +127,8 @@
     .is-expanded .left-panel {
         flex: 0 0 100%;
         border-right: none;
+        overflow: hidden;
+        /* Disable scrolling on the panel itself */
     }
 
     .is-expanded .right-panel {
