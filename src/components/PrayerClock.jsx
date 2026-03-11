@@ -25,12 +25,29 @@ const PrayerClock = ({ prayers, isExpanded }) => {
     };
 
     const formatIslamicDate = (date) => {
-        return new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', {
+        // Adjust date by -1 day for Birmingham Mosque
+        const adjustedDate = new Date(date);
+        adjustedDate.setDate(adjustedDate.getDate() - 1);
+
+        const parts = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', {
             day: 'numeric',
             month: 'long',
             year: 'numeric',
             timeZone: 'Europe/London'
-        }).format(date);
+        }).formatToParts(adjustedDate);
+
+        const day = parts.find(p => p.type === 'day')?.value.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)) || '';
+        const month = parts.find(p => p.type === 'month')?.value || '';
+        let year = parts.find(p => p.type === 'year')?.value.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)) || '';
+
+        // Ensure "هـ" is used if "ه" is present or update year to include it
+        if (year.includes('ه')) {
+            year = year.replace('ه', 'هـ');
+        } else {
+            year = year + ' هـ';
+        }
+
+        return `${day} ${month} ${year}`;
     };
 
     const formatEnglishDate = (date) => {
@@ -56,40 +73,76 @@ const PrayerClock = ({ prayers, isExpanded }) => {
         });
     }
 
-    // Logic to find current active prayer using 'begin_time'
+    // Helper to convert HH:MM(:SS) to seconds from midnight
+    const timeToSeconds = (timeStr) => {
+        if (!timeStr) return 0;
+        const [h, m, s] = timeStr.split(':').map(Number);
+        return (h * 3600) + (m * 60) + (s || 0);
+    };
+
+    // Refactored logic to find current active prayer
     const getCurrentPrayerId = () => {
         if (!prayers || prayers.length === 0) return null;
 
-        // Get UK time components for logic
-        const ukTimeStr = currentTime.toLocaleTimeString('en-US', {
-            hour12: false,
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            timeZone: 'Europe/London'
+        // Get current UK time in seconds from midnight
+        const ukDate = new Date(currentTime.toLocaleString('en-US', { timeZone: 'Europe/London' }));
+        const now = (ukDate.getHours() * 3600) + (ukDate.getMinutes() * 60) + ukDate.getSeconds();
+
+        // Sort prayers by time to ensure logical order
+        const sortedPrayers = [...prayers].sort((a, b) => {
+            return timeToSeconds(a.begin_time || a.time) - timeToSeconds(b.begin_time || b.time);
         });
-        const [ukH, ukM, ukS] = ukTimeStr.split(':').map(Number);
-        const now = ukH * 3600 + ukM * 60 + ukS;
 
-        let currentPrayerId = null;
-
-        for (const prayer of prayers) {
-            const timeStr = prayer.begin_time || prayer.time;
-            if (!timeStr) continue;
-
-            const [h, m, s] = timeStr.split(':').map(Number);
-            const prayerSeconds = h * 3600 + m * 60 + (s || 0);
-
+        let activeId = null;
+        for (const prayer of sortedPrayers) {
+            const prayerSeconds = timeToSeconds(prayer.begin_time || prayer.time);
             if (prayerSeconds <= now) {
-                currentPrayerId = prayer.id;
+                activeId = prayer.id;
             }
         }
 
-        // If no prayer has started yet today (early morning), it's Isha time from previous day
-        return currentPrayerId || prayers[prayers.length - 1].id;
+        // Fallback to the last prayer of the day (e.g., if it's after midnight but before Fajr)
+        return activeId !== null ? activeId : sortedPrayers[sortedPrayers.length - 1].id;
     };
 
     const currentPrayerId = getCurrentPrayerId();
+    const lastPlayedRef = useRef(null); // To prevent duplicate or missed sounds
+
+    // Audio Notification logic
+    useEffect(() => {
+        if (!prayers || prayers.length === 0) return;
+
+        const ukDate = new Date(currentTime.toLocaleString('en-US', { timeZone: 'Europe/London' }));
+        const currentH = ukDate.getHours();
+        const currentM = ukDate.getMinutes();
+        const currentS = ukDate.getSeconds();
+
+        const timestamp = `${currentH}:${currentM}`; // HH:M format for comparison
+
+        // Check every prayer
+        prayers.forEach(prayer => {
+            const pTime = prayer.begin_time || prayer.time;
+            if (!pTime) return;
+
+            const [pH, pM] = pTime.split(':').map(Number);
+
+            // If the time matches and we haven't played for this timestamp yet
+            if (currentH === pH && currentM === pM && lastPlayedRef.current !== timestamp) {
+                lastPlayedRef.current = timestamp;
+
+                const audioPath = import.meta.env.BASE_URL + 'notification.mp3';
+                const audio = new Audio(audioPath);
+                audio.play().catch(error => {
+                    console.log("Audio playback blocked or failed:", error);
+                });
+            }
+        });
+
+        // Reset lastPlayedRef if we're no longer in that minute (optional, but good practice)
+        if (lastPlayedRef.current && lastPlayedRef.current !== timestamp) {
+            // No reset needed here actually, as we check != timestamp, but let's keep it clean
+        }
+    }, [currentTime, prayers]);
 
     // Auto-scroll to active row when expanded or prayer changes
     useEffect(() => {

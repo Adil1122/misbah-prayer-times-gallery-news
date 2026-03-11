@@ -11,7 +11,11 @@ const apiClient = axios.create({
 
 export const fetchDisplayData = async () => {
     try {
-        const response = await apiClient.get(`/api/frontend/display-data?t=${new Date().getTime()}`);
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth() + 1;
+        const day = now.getDate();
+        const response = await apiClient.get(`/api/frontend/display-data?year=${year}&month=${month}&day=${day}&t=${now.getTime()}`);
         return response.data;
     } catch (error) {
         console.error('Error fetching display data:', error);
