@@ -56,6 +56,13 @@
     align-items: center;
 }
 
+.time-row {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    justify-content: center;
+}
+
 .time-display {
     font-size: 3.5rem;
     font-weight: 800;
@@ -63,6 +70,55 @@
     color: white;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
+}
+
+.audio-control-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 0.6rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 50px;
+    height: 50px;
+    margin-top: 0.5rem;
+}
+
+.audio-control-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.1);
+}
+
+.audio-control-btn.is-disabled {
+    background: rgba(239, 68, 68, 0.3);
+    /* Red alert for disabled sound */
+    border-color: #ef4444;
+    animation: pulse-audio 2s infinite ease-in-out;
+}
+
+.audio-control-btn.is-enabled {
+    background: rgba(34, 197, 94, 0.3);
+    /* Green for enabled sound */
+    border-color: #22c55e;
+}
+
+@keyframes pulse-audio {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.15);
+        box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }
 
 .date-group {

@@ -4,24 +4,24 @@
   --color-surface: #f8fafc;
   --color-primary: #0095D9;
   /* Light Blue */
-  --color-primary-dark: #183425;
-  /* Dark Blue */
+  --color-primary-dark: #2d6142;
+  /* Green (medium-dark) */
   --color-primary-hover: #007bb5;
-  --color-text: #183425;
-  /* Dark Blue for main text */
+  --color-text: #2d6142;
+  /* Green for main text */
   --color-text-muted: #64748b;
   --color-accent: #8b5cf6;
 
   /* Custom Blues */
   --color-blue-light: #0095D9;
-  --color-blue-dark: #183425;
+  --color-blue-dark: #2d6142;
 
   /* Table Colors */
-  --color-table-header: #2d4f3c;
+  --color-table-header: #3a7554;
   /* Lighter green for table headings */
-  --color-table-border: #183425;
-  /* Darker green for table borders */
-  --color-border: #183425;
+  --color-table-border: #2d6142;
+  /* Medium-dark green for table borders */
+  --color-border: #2d6142;
   /* Border color darker than #183425 */
 
   /* Typography */

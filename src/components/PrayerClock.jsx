@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Clock, MapPin } from 'lucide-react';
+import { Clock, MapPin, Volume2, VolumeOff } from 'lucide-react';
 import logoImg from '../assets/logo.png';
 import './PrayerClock.css';
 
@@ -25,10 +25,8 @@ const PrayerClock = ({ prayers, isExpanded }) => {
     };
 
     const formatIslamicDate = (date) => {
-        // Adjust date by -1 day for Birmingham Mosque
         const adjustedDate = new Date(date);
-        adjustedDate.setDate(adjustedDate.getDate() - 1);
-
+        // Adjusted per user request: moved 1 day further (removed -1 adjustment)
         const parts = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', {
             day: 'numeric',
             month: 'long',
@@ -106,43 +104,61 @@ const PrayerClock = ({ prayers, isExpanded }) => {
     };
 
     const currentPrayerId = getCurrentPrayerId();
-    const lastPlayedRef = useRef(null); // To prevent duplicate or missed sounds
+    const [isUnmuted, setIsUnmuted] = useState(false);
+    const audioRef = useRef(null);
+    const lastPlayedRef = useRef(null);
+
+    // Initialize audio object once
+    useEffect(() => {
+        const audioPath = import.meta.env.BASE_URL + 'notification.mp3';
+        audioRef.current = new Audio(audioPath);
+        audioRef.current.load(); // Preload metadata
+    }, []);
+
+    // Handle Unmute (Unlocks audio context on mobile browsers)
+    const handleUnmute = () => {
+        if (audioRef.current) {
+            // Play and immediately pause to "unlock" the audio context
+            audioRef.current.play().then(() => {
+                audioRef.current.pause();
+                audioRef.current.currentTime = 0;
+                setIsUnmuted(true);
+            }).catch(error => {
+                console.log("Failed to unlock audio:", error);
+            });
+        }
+    };
 
     // Audio Notification logic
     useEffect(() => {
-        if (!prayers || prayers.length === 0) return;
+        if (!prayers || prayers.length === 0 || !isUnmuted) return;
 
         const ukDate = new Date(currentTime.toLocaleString('en-US', { timeZone: 'Europe/London' }));
         const currentH = ukDate.getHours();
         const currentM = ukDate.getMinutes();
-        const currentS = ukDate.getSeconds();
 
-        const timestamp = `${currentH}:${currentM}`; // HH:M format for comparison
+        const timestamp = `${currentH}:${currentM}`;
 
-        // Check every prayer
         prayers.forEach(prayer => {
             const pTime = prayer.begin_time || prayer.time;
             if (!pTime) return;
 
             const [pH, pM] = pTime.split(':').map(Number);
 
-            // If the time matches and we haven't played for this timestamp yet
             if (currentH === pH && currentM === pM && lastPlayedRef.current !== timestamp) {
                 lastPlayedRef.current = timestamp;
 
-                const audioPath = import.meta.env.BASE_URL + 'notification.mp3';
-                const audio = new Audio(audioPath);
-                audio.play().catch(error => {
-                    console.log("Audio playback blocked or failed:", error);
-                });
+                if (audioRef.current) {
+                    audioRef.current.currentTime = 0;
+                    audioRef.current.play().catch(error => {
+                        console.log("Audio playback failed:", error);
+                        // If it fails due to some reason, we might need to re-unmute
+                        setIsUnmuted(false);
+                    });
+                }
             }
         });
-
-        // Reset lastPlayedRef if we're no longer in that minute (optional, but good practice)
-        if (lastPlayedRef.current && lastPlayedRef.current !== timestamp) {
-            // No reset needed here actually, as we check != timestamp, but let's keep it clean
-        }
-    }, [currentTime, prayers]);
+    }, [currentTime, prayers, isUnmuted]);
 
     // Auto-scroll to active row when expanded or prayer changes
     useEffect(() => {
@@ -166,7 +182,16 @@ const PrayerClock = ({ prayers, isExpanded }) => {
                 {/* Clocks Section (Center) */}
                 <div className="clocks-wrapper">
                     <div className="digital-clock">
-                        <span className="time-display">{formatTime(currentTime)}</span>
+                        <div className="time-row">
+                            <span className="time-display">{formatTime(currentTime)}</span>
+                            <button
+                                onClick={handleUnmute}
+                                className={`audio-control-btn ${isUnmuted ? 'is-enabled' : 'is-disabled'}`}
+                                title={isUnmuted ? "Sound Enabled" : "Enable Sound"}
+                            >
+                                {isUnmuted ? <Volume2 size={24} /> : <VolumeOff size={24} />}
+                            </button>
+                        </div>
                         <div className="date-group">
                             <span className="date-display english-date">{formatEnglishDate(currentTime)}</span>
                             <span className="date-display islamic-date">{formatIslamicDate(currentTime)}</span>
