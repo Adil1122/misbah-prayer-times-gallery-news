@@ -397,3 +397,46 @@
 .expanded-mode .prayers-table th:last-child {
     border-right: none;
 }
+
+/* =========================================
+   JUMMAH PRAYER ROW
+   ========================================= */
+
+.prayer-row.jummah-row {
+    background: rgba(212, 163, 0, 0.10);
+    border-top: 2px dashed rgba(212, 163, 0, 0.5);
+}
+
+.prayer-row.jummah-row td {
+    border-bottom: 2px dashed rgba(212, 163, 0, 0.4);
+}
+
+.prayer-row.jummah-row .prayer-name-en,
+.prayer-row.jummah-row .prayer-time-cell,
+.prayer-row.jummah-row .prayer-name-ar {
+    color: #b8860b;
+    -webkit-text-stroke: 0.5px #b8860b;
+    text-stroke: 0.5px #b8860b;
+}
+
+.jummah-badge {
+    display: inline-block;
+    font-size: 0.65em;
+    font-weight: 700;
+    background: #d4a300;
+    color: white;
+    border-radius: 999px;
+    padding: 0.1em 0.55em;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 1.6;
+}
+
+.expanded-mode .prayer-row.jummah-row .prayer-name-en,
+.expanded-mode .prayer-row.jummah-row .prayer-time-cell,
+.expanded-mode .prayer-row.jummah-row .prayer-name-ar {
+    -webkit-text-stroke: 1px #b8860b;
+    text-stroke: 1px #b8860b;
+}

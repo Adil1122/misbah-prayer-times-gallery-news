@@ -24,7 +24,8 @@ const Home = () => {
                         name: p.english_name,
                         arabic_name: p.arabic_name,
                         begin_time: p.begin_time,
-                        end_time: p.end_time
+                        end_time: p.end_time,
+                        is_jummah: p.is_jummah ?? false
                     }));
                     setPrayers(mappedPrayers);
 
