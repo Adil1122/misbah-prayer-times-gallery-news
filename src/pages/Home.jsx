@@ -13,12 +13,36 @@ const Home = () => {
     const [loading, setLoading] = useState(true);
     const [isExpanded, setIsExpanded] = useState(false);
 
+    const formatTimeForNews = (timeStr) => {
+        if (!timeStr) return '--:--';
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        const date = new Date();
+        date.setHours(hours);
+        date.setMinutes(minutes);
+        return date.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        });
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             try {
+                // Fetch Today's Data
                 const data = await fetchDisplayData();
+
+                // Fetch Tomorrow's Data
+                const tomorrowDate = new Date();
+                tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+                const tomorrowData = await fetchDisplayData(
+                    tomorrowDate.getFullYear(),
+                    tomorrowDate.getMonth() + 1,
+                    tomorrowDate.getDate()
+                );
+
                 if (data.status === 'success') {
-                    // Map Prayer Timings
+                    // Map Prayer Timings Map today's prayers
                     const mappedPrayers = data.data.prayer_timings.map((p, index) => ({
                         id: p.id || index + 1,
                         name: p.english_name,
@@ -40,6 +64,25 @@ const Home = () => {
 
                     // Map News to simple strings
                     const mappedNews = data.data.news.map(n => n.content);
+
+                    // Check for changes in tomorrow's prayer timings
+                    if (tomorrowData && tomorrowData.status === 'success') {
+                        const todayTimings = data.data.prayer_timings;
+                        const tomorrowTimings = tomorrowData.data.prayer_timings;
+
+                        tomorrowTimings.forEach(tPrayer => {
+                            const matchingToday = todayTimings.find(p => p.english_name === tPrayer.english_name);
+                            // Compare begin_time - ignoring cases where both are null/missing
+                            if (matchingToday && tPrayer.begin_time && matchingToday.begin_time !== tPrayer.begin_time) {
+                                const formattedTime = formatTimeForNews(tPrayer.begin_time);
+                                mappedNews.push({
+                                    text: `Tomorrow ${tPrayer.english_name} time would be ${formattedTime}`,
+                                    color: '#ff4d4d'
+                                });
+                            }
+                        });
+                    }
+
                     setNews(mappedNews);
                 }
             } catch (error) {
